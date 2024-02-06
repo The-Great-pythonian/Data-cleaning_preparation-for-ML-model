@@ -15,7 +15,7 @@ print(dataset_1.describe())
 print(dataset_1.dtypes)
 
 # data cleaning
-#columns 2
+##cleaning col2 -
 #first convert to string then split string then  expand split to col
 clean_pr =dataset_1['Price'].str.split('$',-1,expand=True)
 print(clean_pr[1].unique())
@@ -36,7 +36,7 @@ clean_1d=clean_1d.str.replace('$','')
 dataset_1['Discount_mod'] =clean_1d
 # # #finished col 3 cleaned
 
-# celaning col4 ....
+#cleaning col3 - ....
 clean_R =dataset_1['Rating'].str.split(' ',-1,expand=True)
 print(clean_R[1].unique())
 clean_r1=clean_R[1].str.replace('Reviews','0')
