@@ -1,6 +1,6 @@
 # Data-cleaning_preparation-for-ML-model
 
-cleaning a dirty dataset for ML modeling 
+cleaning a dirty dataset Grcerydataset from kaggle.com for ML modeling 
 •	
 •	clean string data- extract rating, reviews values from the rating field and separate into different fields
 •	fill null values and  drop duplicates 
