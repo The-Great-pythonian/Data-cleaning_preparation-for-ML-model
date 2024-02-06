@@ -1,0 +1,120 @@
+import pandas as pd
+from  matplotlib import pyplot
+import numpy
+#open and read file
+path =r'c:\Users\INDOMITABLE ROCK\PycharmProjects\file_folder\GroceryDataset.csv'
+dataset = pd.read_csv(path)
+
+#make a copy
+dataset_1 = dataset.copy()
+#obtain infomation about dataset
+print(dataset_1.head())
+print(dataset_1.info())
+print(dataset_1.shape)
+print(dataset_1.describe())
+print(dataset_1.dtypes)
+
+# data cleaning
+#columns 2
+#first convert to string then split string then  expand split to col
+clean_pr =dataset_1['Price'].str.split('$',-1,expand=True)
+print(clean_pr[1].unique())
+#repalce unwanted value
+clean_1 =clean_pr[1].replace({'through-':'',',':''})
+#pass it to new  cols label df['Price_mod']
+dataset_1['Price_mod'] =clean_1
+
+print(dataset_1.shape)
+#finished col 2 cleaned
+
+#cleaning col3 -
+clean_DS =dataset_1['Discount'].str.split(' ',-1,expand=True)
+print(clean_DS[1].unique())
+clean_1d =clean_DS[1].replace({'Discount':'0','Members':'','1':'','5':'','item':''})
+clean_1d=clean_1d.str.replace('$','')
+#pass it to new  cols
+dataset_1['Discount_mod'] =clean_1d
+# # #finished col 3 cleaned
+
+# celaning col4 ....
+clean_R =dataset_1['Rating'].str.split(' ',-1,expand=True)
+print(clean_R[1].unique())
+clean_r1=clean_R[1].str.replace('Reviews','0')
+dataset_1['Rating_mod'] = clean_r1
+
+print(clean_R[8].unique())
+#this clean_R[8] is clean just pass it to new col review
+dataset_1['No_Reviews'] = clean_R[8]
+
+#for inspection
+print(dataset_1.shape)
+
+# the rest columns are okay
+
+#### drop old columns in the dataset
+dataset_1 = dataset_1.drop(['Price','Discount','Rating'], axis= 1)
+print(dataset_1.shape)
+
+#check dtype of dataset_1 and convert these new columns into float
+
+dataset_1['Price_mod']= pd.to_numeric(dataset_1['Price_mod'], errors='coerce')
+dataset_1['Discount_mod']=pd.to_numeric(dataset_1['Discount_mod'], errors='coerce')
+
+dataset_1['Rating_mod']=pd.to_numeric(dataset_1['Rating_mod'], errors='coerce')
+
+dataset_1['No_Reviews']=pd.to_numeric(dataset_1['No_Reviews'], errors='coerce') #.astype(pd.Int64Dtype())
+
+# check if all datatype are in  correct order
+print(dataset_1.info())
+
+
+##null counts
+print(dataset_1.isnull().sum())
+#most ML cant work with bnull valuues
+#numerical columns  fill in the nan values
+dataset_2 = dataset_1.fillna(dataset_1.mean())
+#non numerical columns fill in the nan values
+dataset_3 = dataset_2.fillna('unknown')
+
+#check for duplicate- it affect the peromance of ML model
+
+print(dataset_3.duplicated().sum())
+print(dataset_3.shape)
+dataset_4 = dataset_3.drop_duplicates(keep='first')
+print(dataset_4.shape)
+
+
+# data preprocessing  for ML
+# #i need 4 cols for ML model
+dataset_5= dataset_4.drop(['Currency','Title','Feature','Product Description'],axis=1)
+#print(dataset_4.head())
+print(dataset_5.shape)
+
+# prepare the target cols ( rating * reviews)  and insert it last column
+buyingProspect= dataset_5['Rating_mod']*dataset_5['No_Reviews']
+print(buyingProspect)
+dataset_5.insert(5,'buyingProspect',buyingProspect,allow_duplicates=True)
+
+
+# # #encoding category label as numerical
+# print out the unique values to mmap
+print(dataset_5['Sub Category'].unique())
+
+d= {'Bakery & Desserts':1, 'Beverages & Water': 2 ,'Breakfast':3, 'Candy':4,
+ 'Cleaning Supplies':5, 'Coffee':6 ,'Deli':7 ,'Floral':8 ,'Gift Baskets':9 ,'Household':10,
+ 'Kirkland Signature Grocery':11, 'Laundry Detergent & Supplies':12,
+ 'Meat & Seafood':13, 'Organic':14, 'Pantry & Dry Goods':15,
+ 'Paper & Plastic Products':16, 'Poultry':17, 'Seafood':18, 'Snacks':19}
+dataset_5['Sub Category'] = dataset_5['Sub Category'].map(d)
+
+# end .... see the file Processed_cleaned_file,csv
+
+
+
+
+
+
+
+
+
+
